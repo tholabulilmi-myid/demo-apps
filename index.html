@@ -1,55 +1,284 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Secure Access Portal | CyberNetix</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #050a14;
+            --accent-cyan: #00f2ff;
+            --accent-blue: #0072ff;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #ffffff;
+            --text-dim: #8892b0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at center, #0a192f 0%, #050a14 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            color: var(--text-main);
+        }
+
+        /* Animated Background Grid & Glow */
+        body::before {
+            content: "";
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background-image: 
+                linear-gradient(rgba(0, 242, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 242, 255, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            transform: perspective(500px) rotateX(60deg) translateY(-10%);
+            z-index: -1;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
+            100% { transform: perspective(500px) rotateX(60deg) translateY(50px); }
+        }
+
+        /* Glassmorphism Card */
+        .glass-card {
+            width: 900px;
+            height: 550px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            display: flex;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(255, 255, 255, 0.02);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Left Section: Branding & Graphics */
+        .side-illustration {
+            flex: 1;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: linear-gradient(135deg, rgba(0, 114, 255, 0.1) 0%, transparent 100%);
+            border-right: 1px solid var(--glass-border);
+        }
+
+        .logo-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 1.4rem;
+            letter-spacing: 3px;
+            color: var(--accent-cyan);
+        }
+
+        .hexagon {
+            width: 30px;
+            height: 30px;
+            background: var(--accent-cyan);
+            clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+            box-shadow: 0 0 15px var(--accent-cyan);
+        }
+
+        .visual-element {
+            position: relative;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .circle-glow {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            filter: blur(60px);
+            opacity: 0.3;
+            animation: pulse 4s infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { opacity: 0.2; transform: scale(1); }
+            to { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        /* Right Section: Login Form */
+        .side-form {
+            flex: 1.2;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #fff, var(--text-dim));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header p {
+            color: var(--text-dim);
+            margin-bottom: 40px;
+            font-size: 0.95rem;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        input {
+            width: 100%;
+            padding: 16px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            border-color: var(--accent-cyan);
+            background: rgba(0, 242, 255, 0.03);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.1);
+        }
+
+        .form-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .btn-signin {
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan));
+            border: none;
+            padding: 14px 40px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0, 114, 255, 0.3);
+            transition: 0.3s;
+        }
+
+        .btn-signin:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 242, 255, 0.4);
+        }
+
+        .forgot-link {
+            color: var(--accent-cyan);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: 0.3s;
+        }
+
+        .forgot-link:hover {
+            text-shadow: 0 0 8px var(--accent-cyan);
+        }
+
+        .security-note {
+            margin-top: 50px;
+            font-size: 0.7rem;
+            color: #4a5568;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 850px) {
+            .glass-card {
+                flex-direction: column;
+                width: 95%;
+                height: auto;
+            }
+            .side-illustration {
+                display: none; /* Sembunyikan ilustrasi di mobile */
+            }
+            .side-form {
+                padding: 40px 30px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="background-overlay"></div>
-    
-    <main class="login-container">
-        <div class="glass-card">
+
+    <main class="glass-card">
+        <section class="side-illustration">
+            <div class="logo-box">
+                <div class="hexagon"></div>
+                <span>CYBERNETIX</span>
+            </div>
             
-            <div class="side-illustration">
-                <div class="logo-container">
-                    <div class="hexagon-logo"></div>
-                    <span class="brand-name">CYBERNETIX</span>
-                </div>
-                <div class="abstract-graphic">
-                    <div class="glow-circle"></div>
-                    <div class="pulse-ring"></div>
+            <div class="visual-element">
+                <div class="circle-glow"></div>
+                <div style="z-index: 1; text-align: center;">
+                    <p style="color: var(--accent-cyan); font-weight: 600;">ENCRYPTED NODE</p>
+                    <small style="color: var(--text-dim);">SYSTEM ID: 00-FF-X9</small>
                 </div>
             </div>
 
-            <div class="side-form">
-                <header>
-                    <h1>Secure Access Portal</h1>
-                    <p>Sign in to your account</p>
-                </header>
-
-                <form>
-                    <div class="input-group">
-                        <input type="text" placeholder="Username" required>
-                    </div>
-                    <div class="input-group">
-                        <input type="password" placeholder="Password" required>
-                    </div>
-                    
-                    <div class="form-actions">
-                        <button type="submit" class="btn-primary">Sign In</button>
-                        <a href="#" class="link-forgot">Forgot password?</a>
-                    </div>
-                </form>
-
-                <footer>
-                    <p>Protected by Enterprise Security Layer</p>
-                </footer>
+            <div class="branding-text">
+                <h2 style="font-size: 1rem; color: #fff;">Quantum-Grade Protection</h2>
+                <p style="font-size: 0.8rem; margin: 0;">Next-gen security for modern infrastructure.</p>
             </div>
+        </section>
 
-        </div>
+        <section class="side-form">
+            <header>
+                <h1>Secure Access Portal</h1>
+                <p>Please enter your credentials to proceed.</p>
+            </header>
+
+            <form action="#">
+                <div class="input-group">
+                    <input type="text" placeholder="Username / Email" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" placeholder="Password" required>
+                </div>
+
+                <div class="form-footer">
+                    <button type="submit" class="btn-signin">SIGN IN</button>
+                    <a href="#" class="forgot-link">Forgot password?</a>
+                </div>
+            </form>
+
+            <div class="security-note">
+                <svg width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+                </svg>
+                Protected by Enterprise Security Layer
+            </div>
+        </section>
     </main>
+
 </body>
 </html>

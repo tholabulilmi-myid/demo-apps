@@ -1,14 +1,22 @@
+version: "3.9"
+
 services:
-demo-apps:
-image: demo-apps:latest
-build: .
-container_name: demo-apps
-restart: always
-ports:
-- "1000:80"
-networks:
-- web-profile-net
+
+  jenkins-irwan:
+    image: jenkins/jenkins:lts-jdk21
+    container_name: jenkins-irwan
+    restart: unless-stopped
+    volumes:
+      - jenkins_home:/var/jenkins_home
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    networks:
+      - jenkins-net
+
+volumes:
+  jenkins_home:
 
 networks:
-web-profile-net:
-driver: bridge
+  jenkins-net:
+    driver: bridge

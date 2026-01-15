@@ -305,7 +305,7 @@
                 <p>Identify yourself to proceed to the mainframe.</p>
             </div>
 
-            <form>
+            <form id="loginForm">
                 <div class="input-group">
                     <label>USER IDENTITY</label>
                     <input type="text" class="input-field" required>
@@ -325,6 +325,7 @@
                     <a href="#">System Help</a>
                 </div>
             </form>
+            
         </div>
 
     </main>
@@ -341,5 +342,23 @@
             });
         });
     </script>
+
+    <script>
+    // Menangkap aksi klik tombol login
+    document.querySelector('form').addEventListener('submit', function(e) {
+        e.preventDefault(); // Mencegah reload halaman
+        
+        // Tambahkan efek transisi biar keren
+        document.querySelector('.login-wrapper').style.opacity = '0';
+        document.querySelector('.login-wrapper').style.transform = 'scale(0.9)';
+        document.querySelector('.login-wrapper').style.transition = '0.5s ease';
+
+        // Pindah ke dashboard setelah 500ms
+        setTimeout(() => {
+            window.location.href = 'dashboard.html';
+        }, 500);
+    });
+</script>
+    
 </body>
 </html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberNetix | Security Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #020408;
+            --accent-cyan: #00f2ff;
+            --accent-blue: #0066ff;
+            --glass-bg: rgba(13, 25, 48, 0.7);
+            --glass-border: rgba(0, 242, 255, 0.1);
+            --text-main: #e0e6ed;
+            --text-dim: #94a3b8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
+
+        /* Background Layers (Same as Login) */
+        .dot-grid {
+            position: fixed; width: 100%; height: 100%;
+            background-image: radial-gradient(rgba(0, 242, 255, 0.1) 1px, transparent 1px);
+            background-size: 30px 30px; z-index: -1;
+        }
+
+        /* Top Navigation */
+        nav {
+            height: 70px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 40px; position: sticky; top: 0; z-index: 100;
+        }
+
+        .brand { font-weight: 700; letter-spacing: 2px; color: #fff; display: flex; align-items: center; gap: 10px; }
+        .brand span { color: var(--accent-cyan); }
+        .user-profile { display: flex; align-items: center; gap: 15px; font-size: 0.9rem; }
+        .status-badge { width: 10px; height: 10px; background: #00ff88; border-radius: 50%; box-shadow: 0 0 10px #00ff88; }
+
+        /* Layout Grid */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 25px; padding: 30px; max-width: 1600px; margin: 0 auto;
+        }
+
+        /* Sidebar */
+        .sidebar { display: flex; flex-direction: column; gap: 10px; }
+        .nav-item {
+            padding: 12px 20px; border-radius: 8px; cursor: pointer;
+            color: var(--text-dim); transition: 0.3s; border: 1px solid transparent;
+        }
+        .nav-item.active {
+            background: rgba(0, 242, 255, 0.05); color: var(--accent-cyan);
+            border-color: rgba(0, 242, 255, 0.2);
+        }
+        .nav-item:hover:not(.active) { color: #fff; background: rgba(255,255,255,0.05); }
+
+        /* Main Content */
+        .main-content { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+        /* Cards / Widgets */
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px; padding: 25px;
+            position: relative; overflow: hidden;
+        }
+        .card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+            opacity: 0.5;
+        }
+
+        .card-title {
+            font-size: 0.8rem; font-weight: 700; color: var(--accent-cyan);
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px;
+            display: flex; justify-content: space-between;
+        }
+
+        .stat-value { font-size: 2.2rem; font-weight: 700; margin-bottom: 5px; }
+        .stat-desc { font-size: 0.8rem; color: var(--text-dim); }
+
+        /* Visual Graph Dummy */
+        .graph-area {
+            height: 150px; margin-top: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex; align-items: flex-end; gap: 10px;
+        }
+        .bar { flex: 1; background: var(--accent-blue); opacity: 0.5; transition: 0.5s; }
+        .bar:hover { opacity: 1; filter: drop-shadow(0 0 10px var(--accent-blue)); }
+
+        /* Big Panel */
+        .full-width { grid-column: span 3; }
+        
+        .table-area { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .table-area th { text-align: left; padding: 12px; color: var(--text-dim); font-size: 0.8rem; border-bottom: 1px solid var(--glass-border); }
+        .table-area td { padding: 15px 12px; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.02); }
+
+        .tag {
+            padding: 4px 10px; border-radius: 4px; font-size: 0.7rem; font-weight: 700;
+        }
+        .tag-high { background: rgba(255, 60, 60, 0.1); color: #ff3c3c; border: 1px solid #ff3c3c; }
+        .tag-low { background: rgba(0, 255, 136, 0.1); color: #00ff88; border: 1px solid #00ff88; }
+
+        @media (max-width: 1100px) {
+            .main-content { grid-template-columns: 1fr 1fr; }
+            .full-width { grid-column: span 2; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dot-grid"></div>
+
+    <nav>
+        <div class="brand">
+            <div style="width:25px; height:25px; background:var(--accent-cyan); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);"></div>
+            CYBER<span>NETIX</span>
+        </div>
+        <div class="user-profile">
+            <span style="color: var(--text-dim);">SYSTEM_ADMIN: <strong style="color: #fff;">BR0_DEV_01</strong></span>
+            <div class="status-badge"></div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="nav-item active">OVERVIEW</div>
+            <div class="nav-item">NETWORK TRAFFIC</div>
+            <div class="nav-item">SECURITY LOGS</div>
+            <div class="nav-item">FIREWALL RULES</div>
+            <div class="nav-item">AI THREAT DETECTOR</div>
+            <div class="nav-item">SETTINGS</div>
+            <div class="nav-item" style="margin-top: auto; color: #ff3c3c;">LOGOUT_TERMINAL</div>
+        </aside>
+
+        <main class="main-content">
+            
+            <div class="card">
+                <div class="card-title">Active Connections <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg></div>
+                <div class="stat-value">1,284</div>
+                <div class="stat-desc" style="color: #00ff88;">↑ 12% from last hour</div>
+                <div class="graph-area">
+                    <div class="bar" style="height: 40%;"></div>
+                    <div class="bar" style="height: 70%;"></div>
+                    <div class="bar" style="height: 50%;"></div>
+                    <div class="bar" style="height: 90%;"></div>
+                    <div class="bar" style="height: 60%;"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Threats Blocked <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></div>
+                <div class="stat-value">42</div>
+                <div class="stat-desc">2 Critical attempts neutralized</div>
+                <div style="margin-top: 30px; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--accent-cyan);">
+                    LAST_ATTACK: 192.110.32.X <br>
+                    METHOD: Brute Force <br>
+                    ACTION: IP_BAN_PERMANENT
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">System Health <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg></div>
+                <div class="stat-value">99.9%</div>
+                <div class="stat-desc">Uptime: 142 days, 12:04:22</div>
+                <div style="margin-top: 25px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.7rem; margin-bottom: 5px;">
+                        <span>CPU USAGE</span> <span>24%</span>
+                    </div>
+                    <div style="height: 4px; background: #1a2c45; border-radius: 2px;">
+                        <div style="width: 24%; height: 100%; background: var(--accent-cyan);"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card full-width">
+                <div class="card-title">Security Incident Feed</div>
+                <table class="table-area">
+                    <thead>
+                        <tr>
+                            <th>TIMESTAMP</th>
+                            <th>EVENT TYPE</th>
+                            <th>SOURCE_IP</th>
+                            <th>SEVERITY</th>
+                            <th>STATUS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="font-family: 'JetBrains Mono';">10:19:22</td>
+                            <td>Unauthorized Login Attempt</td>
+                            <td>103.22.10.42</td>
+                            <td><span class="tag tag-high">CRITICAL</span></td>
+                            <td>Blocked</td>
+                        </tr>
+                        <tr>
+                            <td style="font-family: 'JetBrains Mono';">09:45:10</td>
+                            <td>Database Sync</td>
+                            <td>Internal_Node_7</td>
+                            <td><span class="tag tag-low">LOW</span></td>
+                            <td>Success</td>
+                        </tr>
+                        <tr>
+                            <td style="font-family: 'JetBrains Mono';">08:12:05</td>
+                            <td>Firewall Rule Update</td>
+                            <td>System_Admin</td>
+                            <td><span class="tag tag-low">INFO</span></td>
+                            <td>Deployed</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>
